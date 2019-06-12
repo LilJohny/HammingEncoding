@@ -17,6 +17,12 @@ class Tree:
 
     def get_right(self):
         return self._right
-    
+
+    def __repr__(self):
+        return f"{self.data}"
+
+
     right = property(fset=set_right, fget=get_right)
 
+    def is_empty(self):
+        return self._left is None and self._right is None
