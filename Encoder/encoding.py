@@ -1,6 +1,6 @@
 from tree import Tree
 
-class Encoding:
+class Encoder:
     '''
     This is class for encoding needed message
     '''
@@ -12,12 +12,11 @@ class Encoding:
         self.phrase = message
         self.get_possibilities()
         print(self.possibilities)
-        self.encode()
-        rez = list(filter(lambda x: x != -1, self.decode_tree(self.tree)))
-        rez = dict(rez)
-
-        print(self.phrase.translate(str.maketrans(rez)))
-        print(rez)
+        self.generate_tree()
+        translation_table = list(filter(lambda x: x != -1, self.decode_tree(self.tree)))
+        translation_table = dict(translation_table)
+        print(self.phrase.translate(str.maketrans(translation_table)))
+        print(translation_table)
 
     def get_possibilities(self):
         '''
@@ -30,7 +29,7 @@ class Encoding:
         self.possibilities = sorted(symbols, key=lambda x: x[1], reverse=True)
 
 
-    def sort_key(self, object_):
+    def _sort_key(self, object_):
         '''
         This method sorts letters according to possibilities
         '''
@@ -40,14 +39,14 @@ class Encoding:
             return object_[-1]
 
 
-    def sorted_possibilities(self, possibilities):
+    def _sorted_possibilities(self, possibilities):
         '''
         obj, dict -> list
         This method sorts possibilites
         '''
-        possibilities = sorted(possibilities, key=self.sort_key, reverse=True)
+        possibilities = sorted(possibilities, key=self._sort_key, reverse=True)
         result = []
-        possibilities_vals = set(map(self.get_possibility, possibilities))
+        possibilities_vals = set(map(self._get_possibility, possibilities))
         for possibility_val in sorted(possibilities_vals, reverse=True):
             possibility_tuples = list(
                 filter(lambda x: isinstance(x, tuple) and x[-1] == possibility_val,
@@ -66,8 +65,8 @@ class Encoding:
 
     def calculate_sum_pos(self, object_1, object_2):
         '''
-        obj, int, int -> int
-        This method calculates code for every letter
+        obj, tuple or tree.Tree, tuple or tree.Tree -> float
+        This method calculates sum of possibilities for two given objects
         '''
         sum_pos = 0
         if isinstance(object_1, tuple):
@@ -81,10 +80,10 @@ class Encoding:
         return sum_pos
 
 
-    def get_possibility(self, encode_sym):
+    def _get_possibility(self, encode_sym):
         '''
-        obj, str -> int
-        This method returns possibility for symbol
+        obj, tuple or tree.Tree -> float
+        This method returns possibility for given object
         '''
         if isinstance(encode_sym, tuple):
             return encode_sym[-1]
@@ -92,19 +91,19 @@ class Encoding:
             return encode_sym.data[-1]
 
 
-    def encode(self):
+    def generate_tree(self):
         '''
         obj -> None
-        This method totally encodes given message
+        This method generates Huffman tree for given message
         '''
-        possibilities = self.sorted_possibilities(self.possibilities)
+        possibilities = self._sorted_possibilities(self.possibilities)
         while len(possibilities) != 1:
             f_possibility = possibilities[-1]
             s_possibility = possibilities[-2]
             f_possibility = Tree(
                 ('', self.calculate_sum_pos(f_possibility, s_possibility)))
-            if self.get_possibility(
-                    possibilities[-1]) <= self.get_possibility(s_possibility):
+            if self._get_possibility(
+                    possibilities[-1]) <= self._get_possibility(s_possibility):
                 f_possibility.left = possibilities[-1]
                 f_possibility.right = s_possibility
             else:
@@ -113,13 +112,13 @@ class Encoding:
             del possibilities[-1]
             del possibilities[-1]
             possibilities.append(f_possibility)
-            possibilities = self.sorted_possibilities(possibilities)
+            possibilities = self._sorted_possibilities(possibilities)
         self.tree = possibilities[-1]
 
 
     def decode_tree(self, tree):
         '''
-        obj, obj -> list
+        obj, tree.Tree -> list
         This method decodes tree made from the message
         '''
         def _decode_child(code_tree, code):
@@ -154,12 +153,4 @@ class Encoding:
             if encoded_sym is not None:
                 result.append(encoded_sym)
         return result
-
-print('This is example of encoding word "hello" with Huffman code: ')
-p = Encoding("hello")
-while True:
-    command = input('Enter messsage to encode or "1" to finish working: ')
-    if command == '1':
-        break
-    p = Encoding(command.lower())
 

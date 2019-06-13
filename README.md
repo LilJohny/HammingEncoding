@@ -1,1 +1,1 @@
-# HammingEncoding
+# HuffmanEncoding
