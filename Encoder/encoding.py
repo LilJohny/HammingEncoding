@@ -1,22 +1,30 @@
 from tree import Tree
 
+
 class Encoder:
     '''
     This is class for encoding needed message
     '''
-    def __init__(self, message):
+
+    def __init__(self):
         '''
-        obj, str -> None
-        This method initializes an object and performs all needed actions
+        obj -> None
+        This method initializes an object of type Encoder
+        '''
+        self.phrase = ''
+
+    def encode_message(self, message):
+        '''
+        obj, str -> tuple
         '''
         self.phrase = message
         self.get_possibilities()
-        print(self.possibilities)
         self.generate_tree()
-        translation_table = list(filter(lambda x: x != -1, self.decode_tree(self.tree)))
+        translation_table = list(
+            filter(lambda x: x != -1, self.decode_tree(self.tree)))
         translation_table = dict(translation_table)
-        print(self.phrase.translate(str.maketrans(translation_table)))
-        print(translation_table)
+        return self.phrase.translate(
+            str.maketrans(translation_table)), translation_table
 
     def get_possibilities(self):
         '''
@@ -25,9 +33,9 @@ class Encoder:
         '''
         symbols = list(set(list(self.phrase)))
         for i in range(len(symbols)):
-            symbols[i] = symbols[i], self.phrase.count(symbols[i]) / len(self.phrase)
+            symbols[i] = symbols[i], self.phrase.count(symbols[i]) / len(
+                self.phrase)
         self.possibilities = sorted(symbols, key=lambda x: x[1], reverse=True)
-
 
     def _sort_key(self, object_):
         '''
@@ -37,7 +45,6 @@ class Encoder:
             return object_.data[-1]
         else:
             return object_[-1]
-
 
     def _sorted_possibilities(self, possibilities):
         '''
@@ -49,8 +56,9 @@ class Encoder:
         possibilities_vals = set(map(self._get_possibility, possibilities))
         for possibility_val in sorted(possibilities_vals, reverse=True):
             possibility_tuples = list(
-                filter(lambda x: isinstance(x, tuple) and x[-1] == possibility_val,
-                       possibilities))
+                filter(
+                    lambda x: isinstance(x, tuple) and x[-1] ==
+                    possibility_val, possibilities))
             possibility_trees = list(
                 filter(
                     lambda x: isinstance(x, Tree) and x.data[-1] ==
@@ -61,7 +69,6 @@ class Encoder:
             result.extend(possibility_tuples)
             result.extend(possibility_trees)
         return result
-
 
     def calculate_sum_pos(self, object_1, object_2):
         '''
@@ -79,7 +86,6 @@ class Encoder:
             sum_pos += object_2.data[-1]
         return sum_pos
 
-
     def _get_possibility(self, encode_sym):
         '''
         obj, tuple or tree.Tree -> float
@@ -89,7 +95,6 @@ class Encoder:
             return encode_sym[-1]
         elif isinstance(encode_sym, Tree):
             return encode_sym.data[-1]
-
 
     def generate_tree(self):
         '''
@@ -115,12 +120,12 @@ class Encoder:
             possibilities = self._sorted_possibilities(possibilities)
         self.tree = possibilities[-1]
 
-
     def decode_tree(self, tree):
         '''
         obj, tree.Tree -> list
         This method decodes tree made from the message
         '''
+
         def _decode_child(code_tree, code):
             if isinstance(code_tree.left, tuple):
                 encoded = (code_tree.left[0], code + '0')
@@ -153,4 +158,3 @@ class Encoder:
             if encoded_sym is not None:
                 result.append(encoded_sym)
         return result
-
