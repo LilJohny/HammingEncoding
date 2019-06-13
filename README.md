@@ -6,7 +6,7 @@ And then you need to run main.py:<br>
 You will be prompted to enter message to encode.<br>
 It should look like this:<br>
 `Type message to encode: `<br>
-You need to enter message to encode<br>
+You need to enter message to encode.<br>
 After that program will build Huffman tree.<br>
 You will see output:<br>
 `Encoding table :`<br>
