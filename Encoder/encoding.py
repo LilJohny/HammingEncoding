@@ -46,8 +46,8 @@ class Encoder:
             return object_.data[-1]
         else:
             return object_[-1]
-
-    def _sorted_possibilities(self, possibilities):
+    @staticmethod
+    def _sorted_possibilities( possibilities):
         '''
         obj, dict -> list
         This method sorts possibilities
@@ -72,8 +72,8 @@ class Encoder:
             result.extend(possibility_tuples)
             result.extend(possibility_trees)
         return result
-
-    def calculate_sum_pos(self, object_1, object_2):
+    @staticmethod
+    def calculate_sum_pos( object_1, object_2):
         '''
         obj, tuple or tree.Tree, tuple or tree.Tree -> float
         This method calculates sum of possibilities for two given objects
@@ -105,12 +105,12 @@ class Encoder:
         obj -> None
         This method generates Huffman tree for given message
         '''
-        possibilities = self._sorted_possibilities(self.possibilities)
+        possibilities = Encoder._sorted_possibilities(self.possibilities)
         while len(possibilities) != 1:
             f_possibility = possibilities[-1]
             s_possibility = possibilities[-2]
             f_possibility = Tree(
-                ('', self.calculate_sum_pos(f_possibility, s_possibility)))
+                ('', Encoder.calculate_sum_pos(f_possibility, s_possibility)))
             if Encoder._get_possibility(
                     possibilities[-1]) <= Encoder._get_possibility(
                         s_possibility):
@@ -122,7 +122,7 @@ class Encoder:
             del possibilities[-1]
             del possibilities[-1]
             possibilities.append(f_possibility)
-            possibilities = self._sorted_possibilities(possibilities)
+            possibilities = Encoder._sorted_possibilities(possibilities)
         self.tree = possibilities[-1]
 
     def decode_tree(self, tree):
