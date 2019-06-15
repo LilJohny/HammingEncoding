@@ -37,7 +37,8 @@ class Encoder:
                 self.phrase)
         self.possibilities = sorted(symbols, key=lambda x: x[1], reverse=True)
 
-    def _sort_key(self, object_):
+    @staticmethod
+    def _sort_key(object_):
         '''
         This method sorts letters according to possibilities
         '''
@@ -49,11 +50,13 @@ class Encoder:
     def _sorted_possibilities(self, possibilities):
         '''
         obj, dict -> list
-        This method sorts possibilites
+        This method sorts possibilities
         '''
-        possibilities = sorted(possibilities, key=self._sort_key, reverse=True)
+        possibilities = sorted(possibilities,
+                               key=Encoder._sort_key,
+                               reverse=True)
         result = []
-        possibilities_vals = set(map(self._get_possibility, possibilities))
+        possibilities_vals = set(map(Encoder._get_possibility, possibilities))
         for possibility_val in sorted(possibilities_vals, reverse=True):
             possibility_tuples = list(
                 filter(
@@ -86,7 +89,8 @@ class Encoder:
             sum_pos += object_2.data[-1]
         return sum_pos
 
-    def _get_possibility(self, encode_sym):
+    @staticmethod
+    def _get_possibility(encode_sym):
         '''
         obj, tuple or tree.Tree -> float
         This method returns possibility for given object
@@ -107,8 +111,9 @@ class Encoder:
             s_possibility = possibilities[-2]
             f_possibility = Tree(
                 ('', self.calculate_sum_pos(f_possibility, s_possibility)))
-            if self._get_possibility(
-                    possibilities[-1]) <= self._get_possibility(s_possibility):
+            if Encoder._get_possibility(
+                    possibilities[-1]) <= Encoder._get_possibility(
+                        s_possibility):
                 f_possibility.left = possibilities[-1]
                 f_possibility.right = s_possibility
             else:
